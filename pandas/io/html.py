@@ -169,7 +169,7 @@ class _HtmlFrameParser:
 
     displayed_only : bool
         Whether or not items with "display:none" should be ignored
-    
+
     remove_whitespace : bool
         Whether table row values should have all whitespace replaced with a space.
         .. versionadded:: 1.3.0
@@ -191,7 +191,7 @@ class _HtmlFrameParser:
 
     displayed_only : bool
         Whether or not items with "display:none" should be ignored
-    
+
     remove_whitespace : bool
         Whether table row values should have all whitespace replaced with a space
         .. versionadded:: 1.3.0
@@ -905,14 +905,25 @@ def _validate_flavor(flavor):
     return flavor
 
 
-def _parse(flavor, io, match, attrs, encoding, displayed_only, remove_whitespace, **kwargs):
+def _parse(
+    flavor,
+    io,
+    match,
+    attrs,
+    encoding,
+    displayed_only,
+    remove_whitespace,
+    **kwargs
+):
     flavor = _validate_flavor(flavor)
     compiled_match = re.compile(match)  # you can pass a compiled regex here
 
     retained = None
     for flav in flavor:
         parser = _parser_dispatch(flav)
-        p = parser(io, compiled_match, attrs, encoding, displayed_only, remove_whitespace)
+        p = parser(
+            io, compiled_match, attrs, encoding, displayed_only, remove_whitespace
+        )
 
         try:
             tables = p.parse_tables()
@@ -1055,7 +1066,7 @@ def read_html(
 
     displayed_only : bool, default True
         Whether elements with "display: none" should be parsed.
-    
+
     remove_whitespace : bool, default True
         Whether table row values should have all whitespace replaced with a space.
         .. versionadded:: 1.3.0
