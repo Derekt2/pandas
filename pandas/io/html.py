@@ -4,18 +4,15 @@ HTML IO.
 
 """
 
+from __future__ import annotations
+
 from collections import abc
 import numbers
 import os
 import re
 from typing import (
-    Dict,
-    List,
-    Optional,
     Pattern,
     Sequence,
-    Tuple,
-    Union,
 )
 
 from pandas._typing import FilePathOrBuffer
@@ -456,7 +453,7 @@ class _HtmlFrameParser:
         to subsequent cells.
         """
         all_texts = []  # list of rows, each a list of str
-        remainder: List[Tuple[int, str, int]] = []  # list of (index, text, nrows)
+        remainder: list[tuple[int, str, int]] = []  # list of (index, text, nrows)
 
         for tr in rows:
             texts = []  # the output for this row
@@ -642,7 +639,7 @@ def _build_xpath_expr(attrs) -> str:
     if "class_" in attrs:
         attrs["class"] = attrs.pop("class_")
 
-    s = " and ".join([f"@{k}={repr(v)}" for k, v in attrs.items()])
+    s = " and ".join(f"@{k}={repr(v)}" for k, v in attrs.items())
     return f"[{s}]"
 
 
@@ -952,22 +949,22 @@ def _parse(flavor, io, match, attrs, encoding, displayed_only, remove_whitespace
 @deprecate_nonkeyword_arguments(version="2.0")
 def read_html(
     io: FilePathOrBuffer,
-    match: Union[str, Pattern] = ".+",
-    flavor: Optional[str] = None,
-    header: Optional[Union[int, Sequence[int]]] = None,
-    index_col: Optional[Union[int, Sequence[int]]] = None,
-    skiprows: Optional[Union[int, Sequence[int], slice]] = None,
-    attrs: Optional[Dict[str, str]] = None,
+    match: str | Pattern = ".+",
+    flavor: str | None = None,
+    header: int | Sequence[int] | None = None,
+    index_col: int | Sequence[int] | None = None,
+    skiprows: int | Sequence[int] | slice | None = None,
+    attrs: dict[str, str] | None = None,
     parse_dates: bool = False,
-    thousands: Optional[str] = ",",
-    encoding: Optional[str] = None,
+    thousands: str | None = ",",
+    encoding: str | None = None,
     decimal: str = ".",
-    converters: Optional[Dict] = None,
+    converters: dict | None = None,
     na_values=None,
     keep_default_na: bool = True,
     displayed_only: bool = True,
     remove_whitespace: bool = True,
-) -> List[DataFrame]:
+) -> list[DataFrame]:
     r"""
     Read HTML tables into a ``list`` of ``DataFrame`` objects.
 
