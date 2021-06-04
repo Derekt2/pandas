@@ -3,8 +3,6 @@ from datetime import datetime
 import numpy as np
 import pytest
 
-import pandas.util._test_decorators as td
-
 import pandas as pd
 from pandas import (
     DataFrame,
@@ -14,9 +12,6 @@ from pandas import (
     period_range,
 )
 import pandas._testing as tm
-
-# TODO(ArrayManager) concat with reindexing
-pytestmark = td.skip_array_manager_not_yet_implemented
 
 
 @pytest.fixture
@@ -240,8 +235,9 @@ class TestDataFrameJoin:
         b = frame.loc[frame.index[2:], ["B", "C"]]
 
         joined = a.join(b, how="outer").reindex(frame.index)
-        expected = frame.copy()
-        expected.values[np.isnan(joined.values)] = np.nan
+        expected = frame.copy().values
+        expected[np.isnan(joined.values)] = np.nan
+        expected = DataFrame(expected, index=frame.index, columns=frame.columns)
 
         assert not np.isnan(joined.values).all()
 
@@ -342,14 +338,18 @@ class TestDataFrameJoin:
         # merge
         columns = ["a", "b", ("c", "c1")]
         expected = DataFrame(columns=columns, data=[[1, 11, 33], [0, 22, 44]])
-        with tm.assert_produces_warning(UserWarning):
+        with tm.assert_produces_warning(FutureWarning):
             result = pd.merge(df1, df2, on="a")
         tm.assert_frame_equal(result, expected)
 
         # join, see discussion in GH#12219
         columns = ["a", "b", ("a", ""), ("c", "c1")]
         expected = DataFrame(columns=columns, data=[[1, 11, 0, 44], [0, 22, 1, 33]])
-        with tm.assert_produces_warning(UserWarning):
+        msg = "merging between different levels is deprecated"
+        with tm.assert_produces_warning(
+            FutureWarning, match=msg, check_stacklevel=False
+        ):
+            # stacklevel is chosen to be correct for pd.merge, not DataFrame.join
             result = df1.join(df2, on="a")
         tm.assert_frame_equal(result, expected)
 

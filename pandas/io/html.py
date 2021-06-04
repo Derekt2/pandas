@@ -4,18 +4,15 @@ HTML IO.
 
 """
 
+from __future__ import annotations
+
 from collections import abc
 import numbers
 import os
 import re
 from typing import (
-    Dict,
-    List,
-    Optional,
     Pattern,
     Sequence,
-    Tuple,
-    Union,
 )
 
 from pandas._typing import FilePathOrBuffer
@@ -172,7 +169,7 @@ class _HtmlFrameParser:
 
     displayed_only : bool
         Whether or not items with "display:none" should be ignored
-    
+
     remove_whitespace : bool
         Whether table row values should have all whitespace replaced with a space.
         .. versionadded:: 1.3.0
@@ -194,7 +191,7 @@ class _HtmlFrameParser:
 
     displayed_only : bool
         Whether or not items with "display:none" should be ignored
-    
+
     remove_whitespace : bool
         Whether table row values should have all whitespace replaced with a space
         .. versionadded:: 1.3.0
@@ -456,7 +453,7 @@ class _HtmlFrameParser:
         to subsequent cells.
         """
         all_texts = []  # list of rows, each a list of str
-        remainder: List[Tuple[int, str, int]] = []  # list of (index, text, nrows)
+        remainder: list[tuple[int, str, int]] = []  # list of (index, text, nrows)
 
         for tr in rows:
             texts = []  # the output for this row
@@ -642,7 +639,7 @@ def _build_xpath_expr(attrs) -> str:
     if "class_" in attrs:
         attrs["class"] = attrs.pop("class_")
 
-    s = " and ".join([f"@{k}={repr(v)}" for k, v in attrs.items()])
+    s = " and ".join(f"@{k}={repr(v)}" for k, v in attrs.items())
     return f"[{s}]"
 
 
@@ -908,14 +905,25 @@ def _validate_flavor(flavor):
     return flavor
 
 
-def _parse(flavor, io, match, attrs, encoding, displayed_only, remove_whitespace, **kwargs):
+def _parse(
+    flavor,
+    io,
+    match,
+    attrs,
+    encoding,
+    displayed_only,
+    remove_whitespace,
+    **kwargs
+):
     flavor = _validate_flavor(flavor)
     compiled_match = re.compile(match)  # you can pass a compiled regex here
 
     retained = None
     for flav in flavor:
         parser = _parser_dispatch(flav)
-        p = parser(io, compiled_match, attrs, encoding, displayed_only, remove_whitespace)
+        p = parser(
+            io, compiled_match, attrs, encoding, displayed_only, remove_whitespace
+        )
 
         try:
             tables = p.parse_tables()
@@ -952,22 +960,22 @@ def _parse(flavor, io, match, attrs, encoding, displayed_only, remove_whitespace
 @deprecate_nonkeyword_arguments(version="2.0")
 def read_html(
     io: FilePathOrBuffer,
-    match: Union[str, Pattern] = ".+",
-    flavor: Optional[str] = None,
-    header: Optional[Union[int, Sequence[int]]] = None,
-    index_col: Optional[Union[int, Sequence[int]]] = None,
-    skiprows: Optional[Union[int, Sequence[int], slice]] = None,
-    attrs: Optional[Dict[str, str]] = None,
+    match: str | Pattern = ".+",
+    flavor: str | None = None,
+    header: int | Sequence[int] | None = None,
+    index_col: int | Sequence[int] | None = None,
+    skiprows: int | Sequence[int] | slice | None = None,
+    attrs: dict[str, str] | None = None,
     parse_dates: bool = False,
-    thousands: Optional[str] = ",",
-    encoding: Optional[str] = None,
+    thousands: str | None = ",",
+    encoding: str | None = None,
     decimal: str = ".",
-    converters: Optional[Dict] = None,
+    converters: dict | None = None,
     na_values=None,
     keep_default_na: bool = True,
     displayed_only: bool = True,
     remove_whitespace: bool = True,
-) -> List[DataFrame]:
+) -> list[DataFrame]:
     r"""
     Read HTML tables into a ``list`` of ``DataFrame`` objects.
 
@@ -1058,7 +1066,7 @@ def read_html(
 
     displayed_only : bool, default True
         Whether elements with "display: none" should be parsed.
-    
+
     remove_whitespace : bool, default True
         Whether table row values should have all whitespace replaced with a space.
         .. versionadded:: 1.3.0

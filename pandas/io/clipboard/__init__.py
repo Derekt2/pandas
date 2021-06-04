@@ -51,9 +51,9 @@ from ctypes import (
     get_errno,
     sizeof,
 )
-import distutils.spawn
 import os
 import platform
+from shutil import which
 import subprocess
 import time
 import warnings
@@ -66,7 +66,7 @@ HAS_DISPLAY = os.getenv("DISPLAY", False)
 EXCEPT_MSG = """
     Pyperclip could not find a copy/paste mechanism for your system.
     For more information, please visit
-    https://pyperclip.readthedocs.io/en/latest/introduction.html#not-implemented-error
+    https://pyperclip.readthedocs.io/en/latest/#not-implemented-error
     """
 
 ENCODING = "utf-8"
@@ -528,7 +528,7 @@ def determine_clipboard():
         return init_windows_clipboard()
 
     if platform.system() == "Linux":
-        if distutils.spawn.find_executable("wslconfig.exe"):
+        if which("wslconfig.exe"):
             return init_wsl_clipboard()
 
     # Setup for the MAC OS X platform:

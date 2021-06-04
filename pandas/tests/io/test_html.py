@@ -69,6 +69,7 @@ def assert_framelist_equal(list1, list2, *args, **kwargs):
 
 
 @td.skip_if_no("bs4")
+@td.skip_if_no("html5lib")
 def test_bs4_version_fails(monkeypatch, datapath):
     import bs4
 
@@ -88,6 +89,7 @@ def test_invalid_flavor():
 
 @td.skip_if_no("bs4")
 @td.skip_if_no("lxml")
+@td.skip_if_no("html5lib")
 def test_same_ordering(datapath):
     filename = datapath("io", "data", "html", "valid_markup.html")
     dfs_lxml = read_html(filename, index_col=0, flavor=["lxml"])
@@ -98,7 +100,7 @@ def test_same_ordering(datapath):
 @pytest.mark.parametrize(
     "flavor",
     [
-        pytest.param("bs4", marks=td.skip_if_no("bs4")),
+        pytest.param("bs4", marks=[td.skip_if_no("bs4"), td.skip_if_no("html5lib")]),
         pytest.param("lxml", marks=td.skip_if_no("lxml")),
     ],
     scope="class",
@@ -1261,3 +1263,14 @@ class TestReadHtml:
         df1 = self.read_html(file_path_string)[0]
         df2 = self.read_html(file_path)[0]
         tm.assert_frame_equal(df1, df2)
+
+    def test_keep_whitespace(self, datapath):
+        # GH 24766
+        whitespace_data = datapath("io", "data", "html", "whitespace_table.html")
+        df1 = self.read_html(whitespace_data, remove_whitespace=False)[0]
+        df2 = self.read_html(whitespace_data)[0]
+        assert df2.iloc[0, 0] == 'Test with misc. whitespace more text'
+        assert df1.iloc[0, 0] == """
+                    Test with  misc. whitespace     
+                    more text
+                """
